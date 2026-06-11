@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piano Allenamento — 5km in 30' | Andrea</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f5f0;
+    --bg3: #eeeee8;
+    --text: #1a1a1a;
+    --text2: #6b6b6b;
+    --text3: #9a9a9a;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --blue50:#E6F1FB; --blue100:#B5D4F4; --blue200:#85B7EB; --blue400:#378ADD; --blue600:#185FA5; --blue800:#0C447C; --blue900:#042C53;
+    --green50:#EAF3DE; --green100:#C0DD97; --green400:#639922; --green600:#3B6D11; --green800:#27500A;
+    --amber50:#FAEEDA; --amber100:#FAC775; --amber400:#BA7517; --amber600:#854F0B; --amber800:#633806;
+    --red50:#FCEBEB; --red200:#F09595; --red400:#E24B4A; --red800:#791F1F;
+    --purple50:#EEEDFE; --purple400:#7F77DD; --purple800:#3C3489;
+    --teal50:#E1F5EE; --teal400:#1D9E75; --teal800:#085041;
+    --coral50:#FAECE7; --coral400:#D85A30; --coral800:#712B13;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a1a; --bg2: #252525; --bg3: #2e2e2e;
+      --text: #f0f0f0; --text2: #aaaaaa; --text3: #707070;
+      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.2);
+      --blue50:#0a2540; --blue100:#0d3560; --blue800:#85B7EB; --blue900:#B5D4F4;
+      --green50:#0d1f08; --green800:#C0DD97;
+      --amber50:#241500; --amber800:#FAC775;
+      --red50:#2a0a0a; --red800:#F09595;
+      --purple50:#1a1840; --purple800:#AFA9EC;
+      --teal50:#031a12; --teal800:#5DCAA5;
+      --coral50:#2a0d05; --coral800:#F0997B;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: var(--font);
+    background: var(--bg3);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  /* HEADER */
+  .header {
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1.25rem 2rem;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .header-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--blue400); display: flex; align-items: center; justify-content: center;
+  }
+  .header-icon svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+  .header-title { font-size: 16px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 13px; color: var(--text2); margin-top: 1px; }
+  .header-badge {
+    font-size: 12px; font-weight: 500; padding: 5px 12px;
+    background: var(--blue50); color: var(--blue800);
+    border-radius: 20px; border: 0.5px solid var(--blue100);
+  }
+  /* MAIN NAV */
+  .main-nav {
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+    display: flex; overflow-x: auto; gap: 0;
+    padding: 0 2rem;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .mnb {
+    padding: 12px 16px; font-size: 14px; font-weight: 500;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--text2); border-bottom: 2px solid transparent;
+    white-space: nowrap; transition: color 0.15s;
+  }
+  .mnb:hover { color: var(--text); }
+  .mnb.active { color: var(--text); border-bottom-color: var(--blue400); }
+  /* CONTENT */
+  .content { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+  /* PHASE NAV */
+  .phase-nav { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .pb {
+    padding: 7px 15px; border-radius: 20px;
+    border: 0.5px solid var(--border2); background: transparent;
+    cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text2);
+    transition: all 0.15s;
+  }
+  .pb:hover { background: var(--bg2); }
+  .pb.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .sc { background: var(--bg2); border-radius: var(--radius); padding: 12px 14px; }
+  .sc .sl { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .sc .sv { font-size: 20px; font-weight: 500; color: var(--text); }
+  /* PHASE NOTE */
+  .phase-note {
+    font-size: 13px; color: var(--text2); margin-bottom: 1.2rem;
+    padding: 10px 14px; background: var(--bg2);
+    border-radius: var(--radius); border-left: 3px solid var(--blue400);
+  }
+  /* WEEK CARD */
+  .week-card { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 10px; background: var(--bg); }
+  .wh {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; cursor: pointer; background: var(--bg2);
+    transition: background 0.12s; user-select: none;
+  }
+  .wh:hover { background: var(--bg3); }
+  .wtg { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .wn { font-size: 13px; color: var(--text2); font-weight: 500; }
+  .wname { font-size: 15px; font-weight: 500; color: var(--text); }
+  .wbadge { font-size: 11px; padding: 3px 9px; border-radius: 12px; font-weight: 500; }
+  .b-build { background: var(--blue50); color: var(--blue800); }
+  .b-recover { background: var(--green50); color: var(--green800); }
+  .b-race { background: var(--amber50); color: var(--amber800); }
+  .wkm-label { font-size: 13px; color: var(--text2); }
+  .chev { font-size: 18px; color: var(--text2); transition: transform 0.18s; display: inline-block; }
+  .chev.open { transform: rotate(180deg); }
+  .wb { display: none; padding: 14px 16px; }
+  .wb.open { display: block; }
+  /* DAY GRID */
+  .day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .dc { border-radius: var(--radius); padding: 10px 12px; border: 0.5px solid var(--border); background: var(--bg); }
+  .dc.run { border-left: 3px solid var(--blue400); }
+  .dc.run-q { border-left: 3px solid var(--blue600); }
+  .dc.strength { border-left: 3px solid var(--teal400); }
+  .dc.mobility { border-left: 3px solid var(--amber400); }
+  .dc.rest { opacity: 0.45; }
+  .dc.combo { border-left: 3px solid var(--purple400); }
+  .dd { font-size: 11px; color: var(--text2); margin-bottom: 3px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .dtag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 6px; margin-bottom: 5px; font-weight: 500; }
+  .tag-run { background: var(--blue50); color: var(--blue800); }
+  .tag-runq { background: var(--blue100); color: var(--blue900); }
+  .tag-str { background: var(--teal50); color: var(--teal800); }
+  .tag-mob { background: var(--amber50); color: var(--amber800); }
+  .tag-rest { background: var(--bg2); color: var(--text2); }
+  .ddet { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  /* LEGEND */
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .li { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); }
+  .ld { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  /* WEEK TIP */
+  .wtip {
+    font-size: 13px; color: var(--text2); background: var(--bg2);
+    border-radius: var(--radius); padding: 10px 14px;
+    border-left: 3px solid var(--border2); margin-top: 4px;
+  }
+  /* INFO GRID */
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 12px; margin-bottom: 1.2rem; }
+  .ic { border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; background: var(--bg); }
+  .ict { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .icb { font-size: 13px; color: var(--text2); line-height: 1.65; }
+  .icb strong { color: var(--text); }
+  /* PACE TABLE */
+  .pace-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 1rem; background: var(--bg); border-radius: var(--radius-lg); overflow: hidden; border: 0.5px solid var(--border); }
+  .pace-table th { text-align: left; padding: 10px 12px; font-weight: 500; font-size: 12px; color: var(--text2); background: var(--bg2); border-bottom: 0.5px solid var(--border); }
+  .pace-table td { padding: 10px 12px; border-bottom: 0.5px solid var(--border); color: var(--text); }
+  .pace-table tr:last-child td { border-bottom: none; }
+  .pace-zone { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+  /* SECTION TITLE */
+  .section-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .section-sub { font-size: 13px; color: var(--text2); margin-bottom: 1.2rem; }
+  /* FOOTER */
+  .footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--text3); }
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24"><path d="M13 3L5 13h7l-1 8 8-10h-7l1-8z"/></svg>
+    </div>
+    <div>
+      <div class="header-title">Piano Allenamento — Andrea</div>
+      <div class="header-sub">Obiettivo: 5 km in 30' · 11 settimane</div>
+    </div>
+  </div>
+  <span class="header-badge">Giugno 2025</span>
+</header>
+
+<nav class="main-nav">
+  <button class="mnb active" onclick="switchTab('piano',this)">Piano settimane</button>
+  <button class="mnb" onclick="switchTab('forza',this)">Schede forza</button>
+  <button class="mnb" onclick="switchTab('mobilita',this)">Routine mobilità</button>
+  <button class="mnb" onclick="switchTab('pace',this)">Zone di passo</button>
+  <button class="mnb" onclick="switchTab('nutrizione',this)">Nutrizione</button>
+  <button class="mnb" onclick="switchTab('asma',this)">Asma & recupero</button>
+  <button class="mnb" onclick="switchTab('logica',this)">Logica del piano</button>
+</nav>
+
+<main class="content">
+
+  <!-- TAB: PIANO -->
+  <div id="tab-piano" class="tab active">
+    <div class="phase-nav" id="phaseNav"></div>
+    <div id="phaseContent"></div>
+  </div>
+
+  <!-- TAB: FORZA -->
+  <div id="tab-forza" class="tab">
+    <p class="section-title">Schede di forza</p>
+    <p class="section-sub">Tutte le sessioni durano 30 minuti, nessuna attrezzatura. Progressione per fasi: A+B in fase 1, A+B+C in fase 2, A+B+C+D in fase 3.</p>
+    <div class="info-grid">
+      <div class="ic">
+        <p class="ict">&#9651; Spinta (Push) — Scheda A</p>
+        <p class="icb">
+          <strong>3 giri · ~30 min</strong><br><br>
+          Push-up 3×10 (o su ginocchia)<br>
+          Pike push-up 3×8<br>
+          Dip su sedia 3×8<br>
+          Plank frontale 3×30"<br>
+          Superman 3×12<br><br>
+          <em>Focus: pettorali, spalle, tricipiti, core anteriore.</em>
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9661; Trazione (Pull) — Scheda B</p>
+        <p class="icb">
+          <strong>3 giri · ~30 min</strong><br><br>
+          Inverted row su tavolo 3×8<br>
+          Face pull con elastico 3×12<br>
+          Curl bicipiti con elastico 3×12<br>
+          Plank laterale 3×20" per lato<br>
+          Bird-dog 3×10 per lato<br><br>
+          <em>Focus: dorsali, bicipiti, stabilità lombare.</em>
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9675; Gambe / Core — Scheda C</p>
+        <p class="icb">
+          <strong>3 giri · ~30 min</strong><br><br>
+          Squat a corpo libero 3×15<br>
+          Affondi alternati 3×10 per lato<br>
+          Ponte glutei 3×15<br>
+          Calf raise su gradino 3×20<br>
+          Dead bug 3×10 per lato<br><br>
+          <em>Non programmare il giorno prima di intervalli o corsa lunga.</em>
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9651; Pliometria — Scheda D</p>
+        <p class="icb">
+          <strong>Solo fase 3 · 3 giri · ~30 min</strong><br><br>
+          Jump squat 3×8<br>
+          Box step-up esplosivi 3×8 per lato<br>
+          Skipping alto 3×20"<br>
+          Lateral bound 3×8 per lato<br>
+          Burpee lento 3×6<br><br>
+          <em>Entra solo in settimana 8 quando tendini e tibie sono già adattati.</em>
+        </p>
+      </div>
+    </div>
+    <div class="ic" style="margin-top:4px;">
+      <p class="ict">Progressione nel tempo</p>
+      <p class="icb">Fase 1: forma corretta, nessuna fretta di aumentare. Se un esercizio è troppo facile aggiungi 1 serie, non acceleri. Fase 2: scheda C entra il giovedì (48h prima della corsa lunga domenicale). Fase 3: aggiungi 2–3 rep per serie e introduci la pliometria. Recupero tra le serie: 45–60 secondi.</p>
+    </div>
+  </div>
+
+  <!-- TAB: MOBILITA -->
+  <div id="tab-mobilita" class="tab">
+    <p class="section-title">Routine di mobilità</p>
+    <p class="section-sub">10–20 minuti. Focus su caviglie, anche e ischiocrurali — le tre aree critiche per un corridore con shin splints. Nessuna attrezzatura.</p>
+    <div class="info-grid">
+      <div class="ic">
+        <p class="ict">&#9728; Routine mattino — 10 min</p>
+        <p class="icb">
+          <strong>Prima di correre (attivazione)</strong><br><br>
+          Rotazione caviglie 30" per lato<br>
+          Hip circle in piedi 30" per lato<br>
+          World's greatest stretch 5 per lato<br>
+          Squat profondo isometrico 60"<br>
+          Leg swing frontale e laterale 10 per lato<br><br>
+          <em>Non stretching statico: attiva, non allunga a freddo.</em>
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9790; Routine sera — 15 min</p>
+        <p class="icb">
+          <strong>Post-corsa o post-forza</strong><br><br>
+          Piriforme supino (figura 4) 60" per lato<br>
+          Psoas in affondo basso 60" per lato<br>
+          Ischio in piedi al muro 60" per lato<br>
+          Stretching tibiale anteriore 30" per lato<br>
+          Polpaccio al muro 45" per lato<br>
+          Cat-cow respirato 10 ripetizioni<br><br>
+          <em>Stretching statico: solo a muscoli caldi.</em>
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9679; Routine rapida — 10 min</p>
+        <p class="icb">
+          <strong>Nei giorni di riposo attivo</strong><br><br>
+          Couch stretch al muro 60" per lato<br>
+          90/90 hip stretch 60" per lato<br>
+          Ankle CARs (rotazioni controllate) 45" per lato<br>
+          Bretzel stretch 45" per lato<br><br>
+          <em>Ideale la sera. Migliora range of motion senza affaticare.</em>
+        </p>
+      </div>
+    </div>
+    <div class="ic" style="margin-top:4px;">
+      <p class="ict">Perché queste tre aree?</p>
+      <p class="icb">
+        <strong>Caviglie:</strong> mobilità ridotta altera il pattern di appoggio e aumenta lo stress sulle tibie — direttamente collegato ai tuoi shin splints.<br><br>
+        <strong>Anche e flessori dell'anca:</strong> anni di seduta universitaria accorciano psoas e piriforme, che compensano durante la corsa sovraccariando la lombare e le ginocchia.<br><br>
+        <strong>Ischiocrurali:</strong> rigidi limitano la falcata e aumentano il rischio di affaticamento muscolare nelle uscite più lunghe.
+      </p>
+    </div>
+  </div>
+
+  <!-- TAB: PACE -->
+  <div id="tab-pace" class="tab">
+    <p class="section-title">Zone di passo personalizzate</p>
+    <p class="section-sub">Basate sul tuo best attuale (7'17"/km) e sull'obiettivo di gara (6'00"/km). Usale come riferimento preciso durante le uscite.</p>
+    <table class="pace-table">
+      <thead>
+        <tr>
+          <th>Zona</th>
+          <th>Tipo</th>
+          <th>Passo target</th>
+          <th>Come si sente</th>
+          <th>Quando usarla</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pace-zone" style="background:var(--blue50);color:var(--blue800);">Z1</span></td>
+          <td><strong>Recupero attivo</strong></td>
+          <td>&gt; 8'30"/km</td>
+          <td>Conversazione normale, nessuno sforzo percepito</td>
+          <td>Riscaldamento, defaticamento, giorni di recupero</td>
+        </tr>
+        <tr>
+          <td><span class="pace-zone" style="background:var(--green50);color:var(--green800);">Z2</span></td>
+          <td><strong>Aerobico base</strong></td>
+          <td>7'30"–8'30"/km</td>
+          <td>Respiro facile, si parla a frasi intere</td>
+          <td>Corsa lunga, uscite facili (80% del volume totale)</td>
+        </tr>
+        <tr>
+          <td><span class="pace-zone" style="background:var(--amber50);color:var(--amber800);">Z3</span></td>
+          <td><strong>Ritmo gara</strong></td>
+          <td>6'00"–6'30"/km</td>
+          <td>Sforzo moderato, frasi brevi, respiro ritmato</td>
+          <td>Progressivi, tempo run, simulazioni di gara</td>
+        </tr>
+        <tr>
+          <td><span class="pace-zone" style="background:var(--red50);color:var(--red800);">Z4</span></td>
+          <td><strong>Soglia</strong></td>
+          <td>5'20"–5'59"/km</td>
+          <td>Difficile ma sostenibile per 20 minuti</td>
+          <td>Interval training — solo fasi 3-4 del piano</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="ic">
+      <p class="ict">&#9888; Regola anti-shin splints</p>
+      <p class="icb">Se senti le tibie durante la corsa, rallenta immediatamente in Z1. Non spingere mai il ritmo con dolore. La velocità viene dalla forma progressiva, non dalla forza di volontà.</p>
+    </div>
+  </div>
+
+  <!-- TAB: NUTRIZIONE -->
+  <div id="tab-nutrizione" class="tab">
+    <p class="section-title">Nutrizione</p>
+    <p class="section-sub">Linee guida pratiche calibrate sul tuo stile di vita da studente universitario, con allenamenti mattutini alle 6:30.</p>
+    <div class="info-grid">
+      <div class="ic">
+        <p class="ict">&#9728; Pre-corsa (mattina 6:30)</p>
+        <p class="icb">
+          <strong>30–45 min prima:</strong><br>
+          1 banana matura, oppure<br>
+          2 fette di pane bianco + miele<br><br>
+          <strong>Evita:</strong> purea di mela (bruciore confermato), latte, alimenti ad alto contenuto di grassi o fibre.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9650; Post-corsa (entro 30–45 min)</p>
+        <p class="icb">
+          <strong>Colazione di recupero — rapporto carbo:proteine 3:1</strong><br><br>
+          Yogurt greco + frutta + granola, oppure<br>
+          Uova + pane + succo d'arancia.<br><br>
+          Non saltare questo pasto: è fondamentale per il recupero muscolare e la sintesi proteica.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9730; Idratazione</p>
+        <p class="icb">
+          Il tuo intake attuale (~1L/giorno) è troppo basso.<br>
+          <strong>Obiettivo: 1.8–2.2L/giorno.</strong><br><br>
+          Prima di correre: 300ml al risveglio.<br>
+          Uscite &lt; 40 min: non serve borraccia.<br>
+          Uscite &gt; 40 min: 200ml ogni 20 minuti.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#127979; Giorni universitari (9–18)</p>
+        <p class="icb">
+          Non saltare la colazione: è il pasto più importante.<br>
+          Porta con te spuntini facili: frutta, crackers, barrette di cereali.<br><br>
+          Pranzo con proteine + carboidrati complessi ti mantiene stabile nel pomeriggio e ottimizza il recupero dal mattino.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9790; Sonno & performance</p>
+        <p class="icb">
+          Continua con la melatonina se funziona. Mantieni l'orario di sveglia costante anche quando dormi fuori casa — è la variabile più critica per il ritmo circadiano.<br><br>
+          Il tuo dato di sonno profondo (~12%) è leggermente basso: una migliore idratazione giornaliera tende ad aumentarlo.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9655; Calorie & peso forma</p>
+        <p class="icb">
+          Il tuo BMI di 20.5 è ottimale per la corsa. <strong>Non dimagrire</strong> durante questo piano — sarebbe controproducente.<br><br>
+          L'obiettivo è la performance, non il peso. Con 3–4 uscite settimanali il fabbisogno calorico aumenta: non saltare i pasti.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ASMA -->
+  <div id="tab-asma" class="tab">
+    <p class="section-title">Asma & recupero</p>
+    <p class="section-sub">Gestione del Foster, dei trigger ambientali, del protocollo anti-shin splints e della routine post-corsa.</p>
+    <div class="info-grid">
+      <div class="ic">
+        <p class="ict">&#9829; Gestione Foster durante il piano</p>
+        <p class="icb">
+          Continua i 2 puff prescritti ogni giorno, anche se ti senti bene. La terapia di fondo non va mai interrotta autonomamente.<br><br>
+          Hai fatto bene a non usarlo al bisogno: questo indica un buon controllo. Tienilo sempre con te durante le uscite per precauzione.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9651; Pollini & condizioni meteo</p>
+        <p class="icb">
+          Nelle giornate ad alta concentrazione di pollini: corri subito dopo la pioggia, oppure in orario serale.<br><br>
+          Con aria fredda e secca (autunno/inverno): considera una sciarpa leggera sul naso. Il freddo è un trigger dell'asma da sforzo.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9888; Segnali da non ignorare</p>
+        <p class="icb">
+          Se durante la corsa senti respiro sibilante, oppressione al petto o fiato corto sproporzionato allo sforzo: fermati e riposati.<br><br>
+          Se non migliora in 5 minuti, usa il Foster. Questi episodi vanno sempre riferiti al medico per rivalutare la terapia.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9675; Protocollo anti-shin splints</p>
+        <p class="icb">
+          <strong>Prima di correre:</strong> riscaldamento 5 min camminata + rotazione caviglie.<br><br>
+          <strong>Dopo la corsa:</strong> acqua fredda sulle tibie (già lo fai — continua), stretching polpacci e tibiale anteriore.<br><br>
+          <strong>Se il dolore aumenta:</strong> giorno di riposo obbligatorio senza eccezioni.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9654; Routine post-corsa (10 min)</p>
+        <p class="icb">
+          1. Polpaccio in piedi al muro — 30" per lato<br>
+          2. Tibiale anteriore (piede a terra, dorso flesso) — 20" per lato<br>
+          3. Quadricipiti in piedi — 30" per lato<br>
+          4. Anca / flessori in affondo — 30" per lato<br><br>
+          Acqua fredda sulle tibie: già efficace, mantieni questa abitudine.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">&#9675; Scarpe da corsa</p>
+        <p class="icb">
+          Controlla il chilometraggio delle tue scarpe attuali. Le running in genere durano 500–800 km: oltre questo limite il rischio di shin splints aumenta significativamente.<br><br>
+          Con il volume che aumenteremo nel piano, considera un cambio se sei vicino a questa soglia.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: LOGICA -->
+  <div id="tab-logica" class="tab">
+    <p class="section-title">Logica del piano</p>
+    <p class="section-sub">Perché ogni scelta è stata fatta in questo modo.</p>
+    <div class="info-grid">
+      <div class="ic">
+        <p class="ict">Struttura settimanale fissa</p>
+        <p class="icb">
+          <strong>Lun / Mer / Ven / Dom</strong> → corsa<br>
+          <strong>Mar / Gio</strong> → forza o mobilità<br>
+          <strong>Sab</strong> → recupero attivo o riposo<br><br>
+          I giorni di forza non cadono mai il giorno prima di intervalli o corsa lunga, per non compromettere la qualità delle sessioni chiave.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">Regola anti-sovraccarico</p>
+        <p class="icb">
+          Il volume totale settimanale non aumenta mai più del 10% a settimana. Ogni 3 settimane di carico segue 1 settimana di scarico dove forza e mobilità scendono di intensità.<br><br>
+          La scheda C (gambe) è sempre programmata almeno 48 ore prima di intervalli o corsa lunga.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">Mobilità: perché così spesso?</p>
+        <p class="icb">
+          2–4 sessioni a settimana sembrano tante, ma durano 10–15 minuti. La mobilità funziona per accumulo: pochi minuti ogni giorno valgono molto più di una sessione lunga settimanale.<br><br>
+          La routine mattino fa parte del riscaldamento — non aggiunge tempo, sostituisce i primi 10 minuti di camminata pre-corsa.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">Forza e corsa: perché insieme?</p>
+        <p class="icb">
+          I corridori che integrano la forza riducono gli infortuni fino al 50% e migliorano l'economia di corsa (stesso passo con meno sforzo).<br><br>
+          Per te in particolare, rinforzare tibiale anteriore e glutei riduce il carico sulle tibie — attacca il problema alla radice, non solo il sintomo.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">Progressione della forza per fasi</p>
+        <p class="icb">
+          Fase 1 (sett. 1–3): solo A + B, 2 sessioni/sett.<br>
+          Fase 2 (sett. 4–7): A + B + C, 2–3 sessioni/sett.<br>
+          Fase 3 (sett. 8–11): A + B + C + D (plyo), 3 sessioni/sett.<br><br>
+          La pliometria arriva solo quando i tendini sono già adattati al volume di corsa.
+        </p>
+      </div>
+      <div class="ic">
+        <p class="ict">Tempo totale settimanale</p>
+        <p class="icb">
+          Corsa: 90–150 min<br>
+          Forza: 60–90 min (2–3 × 30 min)<br>
+          Mobilità: 30–60 min (3–4 × 10–15 min)<br><br>
+          <strong>Totale: ~4–5 ore/settimana</strong><br>
+          Distribuito su 6 giorni attivi, con sabato come giorno di scarico.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  Piano personalizzato · Andrea · Obiettivo 5 km in 30' · Giugno 2025
+</footer>
+
+<script>
+const phases = [
+  {
+    id:'base', name:'Fase 1 — Base', sub:'Adattamento: costruire il motore aerobico e proteggere le tibie',
+    stats:[{l:'Settimane',v:'1–3'},{l:'Volume',v:'16–20 km'},{l:'Forza',v:'A + B'},{l:'Mobilità',v:'3–4×/sett.'}],
+    weeks:[
+      {num:1,name:'Prima settimana integrata',km:'16 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2 · 7\'45"–8\'30"\nRiscaldamento: routine mattino 10\''},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità sera',det:'Push 3 giri (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull 3 giri (30\') → sera: routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Corsa + strides',det:'4 km Z2 + 4×100m Z3\nRecupero 60" tra gli strides'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Mobilità attiva',det:'Routine rapida 10\' + cammino 20\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'7 km Z2 lenti\nRoutine sera post-corsa'},
+       ],
+       tip:'Prima settimana: priorità alla forma negli esercizi di forza, non all\'intensità. La routine mattino è parte del riscaldamento — non è tempo extra.'
+      },
+      {num:2,name:'Costruzione aerobica',km:'18 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità sera',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa breve',det:'3 km Z1–Z2 facili\nGiorno universitario: parti alle 6:30'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → sera: routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Progressivo',det:'5 km: 2 km Z2 → 2 km Z3 → 1 km Z2\nPrimo contatto col passo gara'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Mobilità + recupero',det:'Routine rapida 10\' + acqua fredda tibie'},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'8 km Z2 costante\n300ml acqua prima di uscire'},
+       ],
+       tip:'Il progressivo di venerdì: 2 km a ~6\'30" sono più che sufficienti. Non forzare il passo gara prima che il corpo sia pronto.'
+      },
+      {num:3,name:'Consolidamento base',km:'20 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'6 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità sera',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa breve',det:'3 km Z1 — gambe leggere'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → sera: routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Interval training',det:'3 km risc. Z2\n4×600m Z3–Z4 · rec. 90" jogging\n1 km defaticamento'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Mobilità attiva',det:'Routine sera 15\' — focus ischiocrurali'},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'8 km Z2\nUltimi 2 km leggermente più veloci'},
+       ],
+       tip:'Prima sessione di intervalli. Le 4×600m sono il cuore della settimana. Tra una ripetuta e l\'altra cammina e respira — non trottare.'
+      },
+    ]
+  },
+  {
+    id:'sviluppo', name:'Fase 2 — Sviluppo', sub:'Volume e ritmo: la scheda C entra in gioco e arriva il tempo run',
+    stats:[{l:'Settimane',v:'4–7'},{l:'Volume',v:'15–24 km'},{l:'Forza',v:'A + B + C'},{l:'Mobilità',v:'3–4×/sett.'}],
+    weeks:[
+      {num:4,name:'Scarico — lascia respirare il corpo',km:'15 km',badge:'b-recover',bl:'Recupero',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — passo libero'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli\n→ sera: routine rapida 10\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — nessuna pressione'},
+        {d:'Gio',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza oggi'},
+        {d:'Ven',type:'run',tag:'tag-run',title:'Corsa media',det:'5 km Z2 — goditi il ritmo'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Riposo attivo',det:'Cammino 20\' + routine rapida 10\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa breve',det:'5 km Z2 — passo libero'},
+       ],
+       tip:'Settimana di scarico: il corpo costruisce forza nel recupero, non durante il carico. Volume giù, intensità giù. Fidati del processo.'
+      },
+      {num:5,name:'Primo tempo run + gambe',km:'20 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa breve',det:'3 km Z1 facili'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza C + mobilità',det:'Gambe (30\') → routine rapida\n48h prima della domenica: OK'},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc. · 3 km a 6\'15"/km Z3\n1 km defaticamento'},
+        {d:'Sab',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → routine rapida 10\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'9 km Z2\nPrima uscita da 9 km — mantieni il passo facile'},
+       ],
+       tip:'Scheda C (gambe) entra il giovedì: è a 3 giorni dalla corsa lunga domenicale. Spazio sufficiente per recuperare completamente.'
+      },
+      {num:6,name:'Costruzione qualità',km:'22 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa + strides',det:'6 km Z2 + 6×100m a passo gara\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa breve',det:'3 km Z1 — recupero attivo'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza C + mobilità',det:'Gambe (30\') → routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n5×800m a 6\'00"–6\'15"/km · rec. 2\'\n1 km defaticamento'},
+        {d:'Sab',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → routine sera 15\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Prima volta in doppia cifra',det:'10 km Z2 costante\nMilestone: celebrala!'},
+       ],
+       tip:'10 km: primo mese+ di piano integrato. Come stanno le tibie? Segnalami qualsiasi fastidio anomalo prima di proseguire.'
+      },
+      {num:7,name:'Picco di volume fase 2',km:'24 km',badge:'b-build',bl:'Costruzione',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa breve',det:'3 km Z1 — gambe leggere'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza C + mobilità',det:'Gambe (30\') → routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Tempo run lungo',det:'1 km risc.\n4 km a 6\'00"–6\'10"/km\n1 km defaticamento'},
+        {d:'Sab',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → routine sera 15\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'10 km Z2\nUltimi 2 km a passo progressivo'},
+       ],
+       tip:'Settimana più impegnativa fin qui. Dopo questa arriva lo scarico 2 e poi la fase specifica. Tieni il ritmo — sei esattamente sulla strada giusta.'
+      },
+    ]
+  },
+  {
+    id:'specifica', name:'Fase 3 — Specifica', sub:'Pliometria e ritmo gara: il test finale si avvicina',
+    stats:[{l:'Settimane',v:'8–11'},{l:'Volume',v:'16–22 km'},{l:'Forza',v:'A+B+C+D plyo'},{l:'Mobilità',v:'4×/sett.'}],
+    weeks:[
+      {num:8,name:'Scarico + intro pliometria',km:'16 km',badge:'b-recover',bl:'Recupero',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2 — passo libero'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri → routine rapida 10\''},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Corsa + strides',det:'4 km Z2 + 4×100m veloci'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Intro Forza D (plyo)',det:'Pliometria — soli 2 giri per testare\n→ routine sera 15\''},
+        {d:'Ven',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2 — gambe fresche'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Riposo attivo',det:'Routine sera 15\' completa'},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa media',det:'6 km — metà Z2, metà Z3'},
+       ],
+       tip:'Secondo scarico. La pliometria entra con soli 2 giri: testa come rispondono tendini e tibie prima di aumentare il carico.'
+      },
+      {num:9,name:'Ritmo gara specifico',km:'20 km',badge:'b-race',bl:'Specifica',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc.\n4 km esatti a 6\'00"/km\n1 km defaticamento\n→ Prima simulazione completa ritmo gara'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria 3 giri (30\') → routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'2×2 km',det:'2×2 km a 5\'50"/km\nRecupero 3\' tra le ripetute'},
+        {d:'Sab',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → routine sera 15\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'9 km Z2 — recupero attivo'},
+       ],
+       tip:'Il tempo run di mercoledì a 6\'00"/km per 4 km è la sessione più importante dell\'intero piano. Se ci riesci, i 30\' sono a portata di mano.'
+      },
+      {num:10,name:'Consolidamento specifica',km:'22 km',badge:'b-race',bl:'Specifica',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa + strides',det:'6 km Z2 + 8×100m a 5\'30"/km'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\') → sera: routine sera 15\''},
+        {d:'Mer',type:'run-q',tag:'tag-runq',title:'Simulazione 5 km',det:'5 km a 6\'00"/km esatti\n→ Obiettivo: finire in 30\'00"–30\'30"\nPartenza diretta senza riscaldamento'},
+        {d:'Gio',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria (30\') → routine rapida 10\''},
+        {d:'Ven',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n6×800m a 5\'50"–6\'00"/km\n1 km defaticamento'},
+        {d:'Sab',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\') → routine sera 15\''},
+        {d:'Dom',type:'run',tag:'tag-run',title:'Corsa lunga',det:'10 km Z2 costante'},
+       ],
+       tip:'La simulazione di mercoledì è il test informale. Parti a 6\'00" e mantieni il passo. Ti dirà esattamente dove sei rispetto all\'obiettivo.'
+      },
+      {num:11,name:'Settimana del test ufficiale',km:'16 km',badge:'b-race',bl:'Test gara',
+       days:[
+        {d:'Lun',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2 — gambe fresche'},
+        {d:'Mar',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli → routine rapida'},
+        {d:'Mer',type:'run',tag:'tag-run',title:'Attivazione',det:'3 km Z1 + 4×100m veloci\nGambe leggere e reattive'},
+        {d:'Gio',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza'},
+        {d:'Ven',type:'rest',tag:'tag-rest',title:'Riposo completo',det:'Idratati bene, dormi presto'},
+        {d:'Sab',type:'mobility',tag:'tag-mob',title:'Mobilità leggera',det:'Routine mattino 10\' soltanto'},
+        {d:'Dom',type:'run-q',tag:'tag-runq',title:'TEST 5 KM',det:'Risc. 10\' Z1\n5 km a 6\'00"–6\'05"/km\nBanana 45\' prima · 300ml acqua al mattino\nFoster prima di uscire'},
+       ],
+       tip:'Parti a 6\'05"/km, non a 5\'50". I primi 2 km devono sembrare quasi facili. La settimana di scarico ha ricaricato tutto — fidati delle gambe.'
+      },
+    ]
+  }
+];
+
+let activePhase = 0;
+let openWeeks = {};
+
+function renderNav() {
+  document.getElementById('phaseNav').innerHTML = phases.map((p, i) =>
+    `<button class="pb ${i===activePhase?'active':''}" onclick="setPhase(${i})">${p.name}</button>`
+  ).join('');
+}
+
+function renderContent() {
+  const p = phases[activePhase];
+  const statsHtml = p.stats.map(s =>
+    `<div class="sc"><p class="sl">${s.l}</p><p class="sv">${s.v}</p></div>`
+  ).join('');
+  const weeksHtml = p.weeks.map(w => {
+    const key = `${activePhase}-${w.num}`;
+    const open = !!openWeeks[key];
+    const daysHtml = w.days.map(s =>
+      `<div class="dc ${s.type}">
+        <p class="dd">${s.d}</p>
+        <span class="dtag ${s.tag}">${s.title}</span>
+        <p class="ddet">${s.det.replace(/\n/g,'<br>')}</p>
+      </div>`
+    ).join('');
+    return `<div class="week-card">
+      <div class="wh" onclick="toggleWeek('${key}')">
+        <div class="wtg">
+          <span class="wn">Settimana ${w.num}</span>
+          <span class="wname">${w.name}</span>
+          <span class="wbadge ${w.badge}">${w.bl}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="wkm-label">${w.km}</span>
+          <span class="chev ${open?'open':''}">&#8964;</span>
+        </div>
+      </div>
+      <div class="wb ${open?'open':''}">
+        <div class="legend">
+          <span class="li"><span class="ld" style="background:#378ADD;"></span>Corsa facile</span>
+          <span class="li"><span class="ld" style="background:#185FA5;"></span>Corsa qualità</span>
+          <span class="li"><span class="ld" style="background:#1D9E75;"></span>Forza</span>
+          <span class="li"><span class="ld" style="background:#BA7517;"></span>Mobilità</span>
+          <span class="li"><span class="ld" style="background:#7F77DD;"></span>Combo</span>
+        </div>
+        <div class="day-grid">${daysHtml}</div>
+        <div class="wtip">&#128161; ${w.tip}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('phaseContent').innerHTML = `
+    <p class="phase-note">${p.sub}</p>
+    <div class="stats-row">${statsHtml}</div>
+    ${weeksHtml}
+  `;
+}
+
+function setPhase(i) { activePhase = i; renderNav(); renderContent(); }
+
+function toggleWeek(k) { openWeeks[k] = !openWeeks[k]; renderContent(); }
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mnb').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+renderNav();
+renderContent();
+</script>
+</body>
+</html>
