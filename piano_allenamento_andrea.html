@@ -58,10 +58,20 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 .status-kicker{font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:600;letter-spacing:.3px;margin-bottom:3px;}
 .status-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.35;}
 .status-sub{font-size:12px;color:var(--text2);margin-top:3px;}
-.progress-box{min-width:150px;}
+.status-side{min-width:178px;display:grid;gap:9px;}
 .progress-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px;}
 .progress-track{height:7px;border-radius:99px;background:var(--bg3);overflow:hidden;border:0.5px solid var(--border);}
 .progress-fill{height:100%;background:var(--blue400);border-radius:inherit;transition:width .2s ease;}
+.backup-strip{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg);padding:10px 12px;margin:-.5rem 0 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.backup-title{font-size:12px;font-weight:600;color:var(--text);}
+.backup-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.status-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.state-btn{border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);border-radius:7px;padding:6px 9px;font:600 11.5px/1 var(--font);cursor:pointer;transition:background .15s,border-color .15s;}
+.state-btn:hover{background:var(--bg3);border-color:var(--text2);}
+.cloud-pill{justify-self:end;font-size:11px;font-weight:500;color:var(--text2);background:var(--bg2);border:0.5px solid var(--border);border-radius:99px;padding:4px 8px;}
+.cloud-pill.on{color:var(--green800);background:var(--green50);}
+.cloud-pill.error{color:var(--red800);background:var(--red50);}
+.hidden-file{display:none;}
 .phase-note{font-size:13px;color:var(--text2);margin-bottom:1.2rem;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);border-left:3px solid var(--blue400);}
 .week-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:9px;background:var(--bg);}
 .wh{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;background:var(--bg2);transition:background .12s;user-select:none;}
@@ -129,7 +139,9 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 @media(max-width:560px){
   .plan-status{grid-template-columns:1fr;}
-  .progress-box{min-width:0;}
+  .status-side{min-width:0;}
+  .status-actions{justify-content:flex-start;}
+  .cloud-pill{justify-self:start;}
 }
 </style>
 </head>
@@ -139,7 +151,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
     <div class="hicon">&#9881;</div>
     <div>
       <div class="htitle">Piano Allenamento — Andrea</div>
-      <div class="hsub">Obiettivo: 5 km in 30&rsquo; &middot; 11 settimane &middot; 22 giu – 6 set 2026</div>
+      <div class="hsub">Obiettivo: 5 km in 30&rsquo; &middot; 11 settimane &middot; 29 giu – 13 set 2026</div>
     </div>
   </div>
   <span class="hbadge">Lun / Mer / Ven</span>
@@ -158,6 +170,15 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 <!-- PIANO -->
 <div id="tab-piano" class="tab active">
   <div class="phase-nav" id="phaseNav"></div>
+  <div class="backup-strip">
+    <span class="backup-title">Backup locale</span>
+    <div class="backup-actions">
+      <button class="state-btn" type="button" onclick="exportBackup()">Esporta JSON</button>
+      <button class="state-btn" type="button" onclick="requestImportBackup()">Importa JSON</button>
+      <span class="cloud-pill" data-cloud-status>Locale</span>
+      <input id="backupFileInput" class="hidden-file" type="file" accept="application/json,.json" onchange="importBackup(event)">
+    </div>
+  </div>
   <div id="phaseContent"></div>
 </div>
 
@@ -245,47 +266,47 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 </div>
 
 </main>
-<footer class="footer">Piano personalizzato &middot; Andrea &middot; 5 km in 30&rsquo; &middot; 22 giu &ndash; 6 set 2026</footer>
+<footer class="footer">Piano personalizzato &middot; Andrea &middot; 5 km in 30&rsquo; &middot; 29 giu &ndash; 13 set 2026</footer>
 
 <script>
 const phases = [
   {
     id:'base', name:'Fase 1 — Base', sub:'Adattamento: costruire il motore aerobico e proteggere le tibie',
-    stats:[{l:'Periodo',v:'22 giu – 12 lug'},{l:'Volume',v:'14–18 km'},{l:'Forza',v:'A + B'},{l:'Mobilità',v:'2–3×/sett.'}],
+    stats:[{l:'Periodo',v:'29 giu – 19 lug'},{l:'Volume',v:'14–18 km'},{l:'Forza',v:'A + B'},{l:'Mobilità',v:'2–3×/sett.'}],
     weeks:[
-      {num:1, range:'22–28 giu 2026', name:'Prima settimana integrata', km:'14 km', badge:'b-build', bl:'Costruzione',
+      {num:1, range:'29 giu – 5 lug 2026', name:'Prima settimana integrata', km:'14 km', badge:'b-build', bl:'Costruzione',
        days:[
-        {d:'Lun',date:'22/06',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 · 7\'45"–8\'30"\nRiscaldamento: routine mattino 10\''},
-        {d:'Mar',date:'23/06',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push 3 giri (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'24/06',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2\nRoutine mattino pre-corsa'},
-        {d:'Gio',date:'25/06',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull 3 giri (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'26/06',type:'run-q',tag:'tag-runq',title:'Corsa + strides',det:'4 km Z2 + 4×100m Z3\nRec. 60" tra gli strides'},
-        {d:'Sab',date:'27/06',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + cammino 20\''},
-        {d:'Dom',date:'28/06',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'29/06',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 · 7\'45"–8\'30"\nRiscaldamento: routine mattino 10\''},
+        {d:'Mar',date:'30/06',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push 3 giri (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'01/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Gio',date:'02/07',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull 3 giri (30\')\nSera: routine rapida 10\''},
+        {d:'Ven',date:'03/07',type:'run-q',tag:'tag-runq',title:'Corsa + strides',det:'4 km Z2 + 4×100m Z3\nRec. 60" tra gli strides'},
+        {d:'Sab',date:'04/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + cammino 20\''},
+        {d:'Dom',date:'05/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Prima settimana: priorità alla forma negli esercizi, non all\'intensità. La routine mattino è il tuo riscaldamento — non è tempo extra.'
       },
-      {num:2, range:'29 giu – 5 lug 2026', name:'Costruzione aerobica', km:'16 km', badge:'b-build', bl:'Costruzione',
-       days:[
-        {d:'Lun',date:'29/06',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
-        {d:'Mar',date:'30/06',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'01/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2\nRoutine mattino'},
-        {d:'Gio',date:'02/07',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'03/07',type:'run-q',tag:'tag-runq',title:'Progressivo',det:'5 km: 2 km Z2 → 2 km Z3 → 1 km Z2\nPrimo contatto col passo gara'},
-        {d:'Sab',date:'04/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
-        {d:'Dom',date:'05/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
-       ],
-       tip:'Il progressivo di venerdì: 2 km a ~6\'30" sono più che sufficienti. Non forzare il passo gara prima che il corpo sia pronto.'
-      },
-      {num:3, range:'6–12 lug 2026', name:'Consolidamento base', km:'18 km', badge:'b-build', bl:'Costruzione',
+      {num:2, range:'6–12 lug 2026', name:'Costruzione aerobica', km:'16 km', badge:'b-build', bl:'Costruzione',
        days:[
         {d:'Lun',date:'06/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
         {d:'Mar',date:'07/07',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'08/07',type:'run',tag:'tag-run',title:'Corsa media',det:'5 km Z2\nRoutine mattino'},
+        {d:'Mer',date:'08/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2\nRoutine mattino'},
         {d:'Gio',date:'09/07',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'10/07',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc. Z2\n4×600m Z3–Z4 · rec. 90" jogging\n1 km defaticamento'},
-        {d:'Sab',date:'11/07',type:'mobility',tag:'tag-mob',title:'Mobilità attiva',det:'Routine sera 15\' — focus ischiocrurali'},
+        {d:'Ven',date:'10/07',type:'run-q',tag:'tag-runq',title:'Progressivo',det:'5 km: 2 km Z2 → 2 km Z3 → 1 km Z2\nPrimo contatto col passo gara'},
+        {d:'Sab',date:'11/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
         {d:'Dom',date:'12/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+       ],
+       tip:'Il progressivo di venerdì: 2 km a ~6\'30" sono più che sufficienti. Non forzare il passo gara prima che il corpo sia pronto.'
+      },
+      {num:3, range:'13–19 lug 2026', name:'Consolidamento base', km:'18 km', badge:'b-build', bl:'Costruzione',
+       days:[
+        {d:'Lun',date:'13/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',date:'14/07',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'15/07',type:'run',tag:'tag-run',title:'Corsa media',det:'5 km Z2\nRoutine mattino'},
+        {d:'Gio',date:'16/07',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
+        {d:'Ven',date:'17/07',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc. Z2\n4×600m Z3–Z4 · rec. 90" jogging\n1 km defaticamento'},
+        {d:'Sab',date:'18/07',type:'mobility',tag:'tag-mob',title:'Mobilità attiva',det:'Routine sera 15\' — focus ischiocrurali'},
+        {d:'Dom',date:'19/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Prima sessione di intervalli. Le 4×600m sono il cuore della settimana. Tra una ripetuta e l\'altra cammina e respira — non trottare.'
       },
@@ -293,53 +314,53 @@ const phases = [
   },
   {
     id:'sviluppo', name:'Fase 2 — Sviluppo', sub:'Volume e ritmo: la scheda C entra in gioco e arriva il tempo run',
-    stats:[{l:'Periodo',v:'13 lug – 9 ago'},{l:'Volume',v:'12–22 km'},{l:'Forza',v:'A + B + C'},{l:'Mobilità',v:'2–3×/sett.'}],
+    stats:[{l:'Periodo',v:'20 lug – 16 ago'},{l:'Volume',v:'12–22 km'},{l:'Forza',v:'A + B + C'},{l:'Mobilità',v:'2–3×/sett.'}],
     weeks:[
-      {num:4, range:'13–19 lug 2026', name:'Scarico — lascia respirare il corpo', km:'12 km', badge:'b-recover', bl:'Recupero',
+      {num:4, range:'20–26 lug 2026', name:'Scarico — lascia respirare il corpo', km:'12 km', badge:'b-recover', bl:'Recupero',
        days:[
-        {d:'Lun',date:'13/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — passo libero'},
-        {d:'Mar',date:'14/07',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli\nSera: routine rapida 10\''},
-        {d:'Mer',date:'15/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — nessuna pressione'},
-        {d:'Gio',date:'16/07',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza oggi'},
-        {d:'Ven',date:'17/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — goditi il ritmo'},
-        {d:'Sab',date:'18/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Cammino 20\' + routine rapida 10\''},
-        {d:'Dom',date:'19/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'20/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — passo libero'},
+        {d:'Mar',date:'21/07',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli\nSera: routine rapida 10\''},
+        {d:'Mer',date:'22/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — nessuna pressione'},
+        {d:'Gio',date:'23/07',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza oggi'},
+        {d:'Ven',date:'24/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — goditi il ritmo'},
+        {d:'Sab',date:'25/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Cammino 20\' + routine rapida 10\''},
+        {d:'Dom',date:'26/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Settimana di scarico: il corpo costruisce forza nel recupero, non durante il carico. Fidati del processo.'
       },
-      {num:5, range:'20–26 lug 2026', name:'Primo tempo run + gambe', km:'17 km', badge:'b-build', bl:'Costruzione',
+      {num:5, range:'27 lug – 2 ago 2026', name:'Primo tempo run + gambe', km:'17 km', badge:'b-build', bl:'Costruzione',
        days:[
-        {d:'Lun',date:'20/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
-        {d:'Mar',date:'21/07',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'22/07',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2\nRoutine mattino'},
-        {d:'Gio',date:'23/07',type:'combo',tag:'tag-str',title:'Forza C + mobilità',det:'Gambe (30\')\nSera: routine rapida\n48h prima del venerdì: OK'},
-        {d:'Ven',date:'24/07',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc.\n3 km a 6\'15"/km Z3\n1 km defaticamento'},
-        {d:'Sab',date:'25/07',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
-        {d:'Dom',date:'26/07',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'27/07',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',date:'28/07',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'29/07',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2\nRoutine mattino'},
+        {d:'Gio',date:'30/07',type:'combo',tag:'tag-str',title:'Forza C + mobilità',det:'Gambe (30\')\nSera: routine rapida\n48h prima del venerdì: OK'},
+        {d:'Ven',date:'31/07',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc.\n3 km a 6\'15"/km Z3\n1 km defaticamento'},
+        {d:'Sab',date:'01/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
+        {d:'Dom',date:'02/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Scheda C (gambe) il giovedì: è a 24h dal tempo run di venerdì, ma il volume è basso. Se senti pesantezza, riduci le serie a 2.'
       },
-      {num:6, range:'27 lug – 2 ago 2026', name:'Costruzione qualità', km:'19 km', badge:'b-build', bl:'Costruzione',
+      {num:6, range:'3–9 ago 2026', name:'Costruzione qualità', km:'19 km', badge:'b-build', bl:'Costruzione',
        days:[
-        {d:'Lun',date:'27/07',type:'run',tag:'tag-run',title:'Corsa + strides',det:'5 km Z2 + 6×100m a passo gara\nRoutine mattino pre-corsa'},
-        {d:'Mar',date:'28/07',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'29/07',type:'run',tag:'tag-run',title:'Corsa media',det:'6 km Z2\nRoutine mattino'},
-        {d:'Gio',date:'30/07',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'31/07',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n5×800m a 6\'00"–6\'15"/km · rec. 2\'\n1 km defaticamento'},
-        {d:'Sab',date:'01/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' — focus caviglie'},
-        {d:'Dom',date:'02/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
-       ],
-       tip:'Primo mese completo di piano integrato. Come stanno le tibie? Segnalami qualsiasi fastidio anomalo prima di proseguire.'
-      },
-      {num:7, range:'3–9 ago 2026', name:'Picco di volume fase 2', km:'22 km', badge:'b-build', bl:'Costruzione',
-       days:[
-        {d:'Lun',date:'03/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'6 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Lun',date:'03/08',type:'run',tag:'tag-run',title:'Corsa + strides',det:'5 km Z2 + 6×100m a passo gara\nRoutine mattino pre-corsa'},
         {d:'Mar',date:'04/08',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
         {d:'Mer',date:'05/08',type:'run',tag:'tag-run',title:'Corsa media',det:'6 km Z2\nRoutine mattino'},
         {d:'Gio',date:'06/08',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'07/08',type:'run-q',tag:'tag-runq',title:'Tempo run lungo',det:'1 km risc.\n4 km a 6\'00"–6\'10"/km\n1 km defaticamento'},
-        {d:'Sab',date:'08/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
+        {d:'Ven',date:'07/08',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n5×800m a 6\'00"–6\'15"/km · rec. 2\'\n1 km defaticamento'},
+        {d:'Sab',date:'08/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' — focus caviglie'},
         {d:'Dom',date:'09/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+       ],
+       tip:'Primo mese completo di piano integrato. Come stanno le tibie? Segnalami qualsiasi fastidio anomalo prima di proseguire.'
+      },
+      {num:7, range:'10–16 ago 2026', name:'Picco di volume fase 2', km:'22 km', badge:'b-build', bl:'Costruzione',
+       days:[
+        {d:'Lun',date:'10/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'6 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',date:'11/08',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'12/08',type:'run',tag:'tag-run',title:'Corsa media',det:'6 km Z2\nRoutine mattino'},
+        {d:'Gio',date:'13/08',type:'combo',tag:'tag-str',title:'Forza B + mobilità',det:'Pull (30\')\nSera: routine rapida 10\''},
+        {d:'Ven',date:'14/08',type:'run-q',tag:'tag-runq',title:'Tempo run lungo',det:'1 km risc.\n4 km a 6\'00"–6\'10"/km\n1 km defaticamento'},
+        {d:'Sab',date:'15/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
+        {d:'Dom',date:'16/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Settimana più impegnativa fin qui. Dopo questa arriva lo scarico 2 e poi la fase specifica. Sei esattamente sulla strada giusta.'
       },
@@ -347,53 +368,53 @@ const phases = [
   },
   {
     id:'specifica', name:'Fase 3 — Specifica', sub:'Pliometria e ritmo gara: il test finale si avvicina',
-    stats:[{l:'Periodo',v:'10 ago – 6 set'},{l:'Volume',v:'13–20 km'},{l:'Forza',v:'A+B+C+D plyo'},{l:'Test gara',v:'6 set 2026'}],
+    stats:[{l:'Periodo',v:'17 ago – 13 set'},{l:'Volume',v:'13–20 km'},{l:'Forza',v:'A+B+C+D plyo'},{l:'Test gara',v:'13 set 2026'}],
     weeks:[
-      {num:8, range:'10–16 ago 2026', name:'Scarico + intro pliometria', km:'13 km', badge:'b-recover', bl:'Recupero',
+      {num:8, range:'17–23 ago 2026', name:'Scarico + intro pliometria', km:'13 km', badge:'b-recover', bl:'Recupero',
        days:[
-        {d:'Lun',date:'10/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — passo libero'},
-        {d:'Mar',date:'11/08',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri\nSera: routine rapida 10\''},
-        {d:'Mer',date:'12/08',type:'run',tag:'tag-run',title:'Corsa + strides',det:'4 km Z2 + 4×100m veloci'},
-        {d:'Gio',date:'13/08',type:'combo',tag:'tag-str',title:'Intro Forza D (plyo)',det:'Pliometria — soli 2 giri\nSera: routine sera 15\''},
-        {d:'Ven',date:'14/08',type:'run',tag:'tag-run',title:'Corsa breve',det:'5 km Z2 — gambe fresche'},
-        {d:'Sab',date:'15/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
-        {d:'Dom',date:'16/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'17/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'4 km Z2 — passo libero'},
+        {d:'Mar',date:'18/08',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri\nSera: routine rapida 10\''},
+        {d:'Mer',date:'19/08',type:'run',tag:'tag-run',title:'Corsa + strides',det:'4 km Z2 + 4×100m veloci'},
+        {d:'Gio',date:'20/08',type:'combo',tag:'tag-str',title:'Intro Forza D (plyo)',det:'Pliometria — soli 2 giri\nSera: routine sera 15\''},
+        {d:'Ven',date:'21/08',type:'run',tag:'tag-run',title:'Corsa breve',det:'5 km Z2 — gambe fresche'},
+        {d:'Sab',date:'22/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
+        {d:'Dom',date:'23/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Secondo scarico. La pliometria entra con soli 2 giri: testa come rispondono tendini e tibie prima di aumentare il carico la prossima settimana.'
       },
-      {num:9, range:'17–23 ago 2026', name:'Ritmo gara specifico', km:'17 km', badge:'b-race', bl:'Specifica',
+      {num:9, range:'24–30 ago 2026', name:'Ritmo gara specifico', km:'17 km', badge:'b-race', bl:'Specifica',
        days:[
-        {d:'Lun',date:'17/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
-        {d:'Mar',date:'18/08',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'19/08',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc.\n4 km esatti a 6\'00"/km\n1 km defaticamento\n→ Prima simulazione completa'},
-        {d:'Gio',date:'20/08',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria 3 giri (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'21/08',type:'run-q',tag:'tag-runq',title:'2×2 km',det:'2×2 km a 5\'50"/km\nRecupero 3\' tra le ripetute'},
-        {d:'Sab',date:'22/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
-        {d:'Dom',date:'23/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'24/08',type:'run',tag:'tag-run',title:'Corsa facile',det:'5 km Z2\nRoutine mattino pre-corsa'},
+        {d:'Mar',date:'25/08',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'26/08',type:'run-q',tag:'tag-runq',title:'Tempo run',det:'1 km risc.\n4 km esatti a 6\'00"/km\n1 km defaticamento\n→ Prima simulazione completa'},
+        {d:'Gio',date:'27/08',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria 3 giri (30\')\nSera: routine rapida 10\''},
+        {d:'Ven',date:'28/08',type:'run-q',tag:'tag-runq',title:'2×2 km',det:'2×2 km a 5\'50"/km\nRecupero 3\' tra le ripetute'},
+        {d:'Sab',date:'29/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine rapida 10\' + acqua fredda tibie'},
+        {d:'Dom',date:'30/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'Il tempo run di mercoledì a 6\'00"/km per 4 km è la sessione più importante dell\'intero piano. Se ci riesci, i 30\' sono a portata di mano.'
       },
-      {num:10, range:'24–30 ago 2026', name:'Consolidamento specifica', km:'20 km', badge:'b-race', bl:'Specifica',
+      {num:10, range:'31 ago – 6 set 2026', name:'Consolidamento specifica', km:'20 km', badge:'b-race', bl:'Specifica',
        days:[
-        {d:'Lun',date:'24/08',type:'run',tag:'tag-run',title:'Corsa + strides',det:'6 km Z2 + 8×100m a 5\'30"/km'},
-        {d:'Mar',date:'25/08',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
-        {d:'Mer',date:'26/08',type:'run-q',tag:'tag-runq',title:'Simulazione 5 km',det:'5 km a 6\'00"/km esatti\n→ Obiettivo: finire in 30\'00"–30\'30"\nPartenza diretta senza riscaldamento'},
-        {d:'Gio',date:'27/08',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria (30\')\nSera: routine rapida 10\''},
-        {d:'Ven',date:'28/08',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n6×800m a 5\'50"–6\'00"/km\n1 km defaticamento'},
-        {d:'Sab',date:'29/08',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
-        {d:'Dom',date:'30/08',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
+        {d:'Lun',date:'31/08',type:'run',tag:'tag-run',title:'Corsa + strides',det:'6 km Z2 + 8×100m a 5\'30"/km'},
+        {d:'Mar',date:'01/09',type:'combo',tag:'tag-str',title:'Forza A + mobilità',det:'Push (30\')\nSera: routine sera 15\''},
+        {d:'Mer',date:'02/09',type:'run-q',tag:'tag-runq',title:'Simulazione 5 km',det:'5 km a 6\'00"/km esatti\n→ Obiettivo: finire in 30\'00"–30\'30"\nPartenza diretta senza riscaldamento'},
+        {d:'Gio',date:'03/09',type:'combo',tag:'tag-str',title:'Forza D + mobilità',det:'Pliometria (30\')\nSera: routine rapida 10\''},
+        {d:'Ven',date:'04/09',type:'run-q',tag:'tag-runq',title:'Interval training',det:'2 km risc.\n6×800m a 5\'50"–6\'00"/km\n1 km defaticamento'},
+        {d:'Sab',date:'05/09',type:'mobility',tag:'tag-mob',title:'Recupero attivo',det:'Routine sera 15\' completa'},
+        {d:'Dom',date:'06/09',type:'rest',tag:'tag-rest',title:'Riposo',det:''},
        ],
        tip:'La simulazione di mercoledì è il test informale. Parti a 6\'00" e mantieni. Ti dirà esattamente dove sei a una settimana dal test finale.'
       },
-      {num:11, range:'31 ago – 6 set 2026', name:'Settimana del test ufficiale', km:'10 km', badge:'b-race', bl:'Test gara',
+      {num:11, range:'7–13 set 2026', name:'Settimana del test ufficiale', km:'10 km', badge:'b-race', bl:'Test gara',
        days:[
-        {d:'Lun',date:'31/08',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2 — gambe fresche'},
-        {d:'Mar',date:'01/09',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli\nSera: routine rapida'},
-        {d:'Mer',date:'02/09',type:'run',tag:'tag-run',title:'Attivazione',det:'3 km Z1 + 4×100m veloci\nGambe leggere e reattive'},
-        {d:'Gio',date:'03/09',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza'},
-        {d:'Ven',date:'04/09',type:'rest',tag:'tag-rest',title:'Riposo completo',det:'Idratati bene, dormi presto'},
-        {d:'Sab',date:'05/09',type:'mobility',tag:'tag-mob',title:'Mobilità leggera',det:'Routine mattino 10\' soltanto\nNessun altro sforzo'},
-        {d:'Dom',date:'06/09',type:'run-q',tag:'tag-runq',title:'🏁 TEST 5 KM',det:'Riscaldamento 10\' Z1\n5 km a 6\'00"–6\'05"/km\nBanana 45\' prima · 300ml acqua al mattino\nFoster prima di uscire'},
+        {d:'Lun',date:'07/09',type:'run',tag:'tag-run',title:'Corsa breve',det:'4 km Z2 — gambe fresche'},
+        {d:'Mar',date:'08/09',type:'combo',tag:'tag-str',title:'Forza A leggera',det:'Push 2 giri soli\nSera: routine rapida'},
+        {d:'Mer',date:'09/09',type:'run',tag:'tag-run',title:'Attivazione',det:'3 km Z1 + 4×100m veloci\nGambe leggere e reattive'},
+        {d:'Gio',date:'10/09',type:'mobility',tag:'tag-mob',title:'Solo mobilità',det:'Routine sera 15\' — nessuna forza'},
+        {d:'Ven',date:'11/09',type:'rest',tag:'tag-rest',title:'Riposo completo',det:'Idratati bene, dormi presto'},
+        {d:'Sab',date:'12/09',type:'mobility',tag:'tag-mob',title:'Mobilità leggera',det:'Routine mattino 10\' soltanto\nNessun altro sforzo'},
+        {d:'Dom',date:'13/09',type:'run-q',tag:'tag-runq',title:'🏁 TEST 5 KM',det:'Riscaldamento 10\' Z1\n5 km a 6\'00"–6\'05"/km\nBanana 45\' prima · 300ml acqua al mattino\nFoster prima di uscire'},
        ],
        tip:'Parti a 6\'05"/km, non a 5\'50". I primi 2 km devono sembrare quasi facili. Undici settimane di lavoro portano qui — fidati delle gambe.'
       },
@@ -402,11 +423,24 @@ const phases = [
 ];
 
 let activePhase=0, openWeeks={}, weekInteraction=false;
-const STORAGE_KEY='andrea-running-plan-state-v1';
-const START_DATE=new Date(2026,5,22);
+const PLAN_ID='andrea-5k-2026-06-29';
+const STORAGE_KEY='andrea-running-plan-state-v2';
+const BACKUP_VERSION=1;
+const START_DATE=new Date(2026,5,29);
 const DAY_NAMES=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
 const MONTH_NAMES=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const SUPABASE_CONFIG={
+  enabled:false,
+  url:'',
+  anonKey:'',
+  table:'plan_state',
+  planId:PLAN_ID,
+  ownerKey:'andrea'
+};
 let planState=loadPlanState();
+let supabaseClient=null, supabaseChannel=null, cloudSaveTimer=null;
+let cloudStatus=SUPABASE_CONFIG.enabled?'connessione':'locale';
+let applyingRemoteState=false;
 
 function loadPlanState(){
   try{
@@ -417,10 +451,68 @@ function loadPlanState(){
   }
 }
 
-function savePlanState(){
+function savePlanState(options={}){
   try{
     localStorage.setItem(STORAGE_KEY,JSON.stringify(planState));
   }catch(e){}
+  if(options.sync!==false&&!applyingRemoteState)scheduleCloudSave();
+}
+
+function backupPayload(){
+  return {
+    version:BACKUP_VERSION,
+    planId:PLAN_ID,
+    exportedAt:new Date().toISOString(),
+    state:planState
+  };
+}
+
+function normalizeStatePayload(payload){
+  if(!payload||typeof payload!=='object')throw new Error('Backup non valido');
+  const state=payload.state&&typeof payload.state==='object'?payload.state:payload;
+  return Object.fromEntries(Object.entries(state).filter(([,value])=>value&&typeof value==='object'));
+}
+
+function exportBackup(){
+  const data=JSON.stringify(backupPayload(),null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download=`piano-corsa-andrea-${toISO(new Date())}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function requestImportBackup(){
+  const input=document.getElementById('backupFileInput');
+  if(input)input.click();
+}
+
+function importBackup(event){
+  const file=event.target.files&&event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const imported=normalizeStatePayload(JSON.parse(reader.result));
+      planState=imported;
+      savePlanState();
+      weekInteraction=false;
+      renderContent();
+    }catch(e){
+      alert('Non riesco a leggere questo backup JSON.');
+    }finally{
+      event.target.value='';
+    }
+  };
+  reader.onerror=()=>{
+    alert('Import non riuscito.');
+    event.target.value='';
+  };
+  reader.readAsText(file);
 }
 
 function isWorkout(s){
@@ -461,6 +553,138 @@ function updateNote(id,value){
   planState[id]=entry;
   cleanupEntry(id);
   savePlanState();
+}
+
+function hasSupabaseConfig(){
+  return !!(SUPABASE_CONFIG.enabled&&SUPABASE_CONFIG.url&&SUPABASE_CONFIG.anonKey);
+}
+
+function cloudLabel(){
+  if(cloudStatus==='sync')return 'Cloud on';
+  if(cloudStatus==='salvataggio')return 'Salvo...';
+  if(cloudStatus==='connessione')return 'Cloud...';
+  if(cloudStatus==='errore')return 'Cloud errore';
+  return 'Locale';
+}
+
+function cloudClass(){
+  if(cloudStatus==='sync'||cloudStatus==='salvataggio')return 'on';
+  if(cloudStatus==='errore')return 'error';
+  return '';
+}
+
+function setCloudStatus(status){
+  cloudStatus=status;
+  document.querySelectorAll('[data-cloud-status]').forEach(pill=>{
+    pill.textContent=cloudLabel();
+    pill.className=`cloud-pill ${cloudClass()}`.trim();
+  });
+}
+
+function loadSupabaseScript(){
+  if(window.supabase)return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    const existing=document.querySelector('script[data-supabase-client]');
+    if(existing){
+      existing.addEventListener('load',resolve,{once:true});
+      existing.addEventListener('error',reject,{once:true});
+      return;
+    }
+    const script=document.createElement('script');
+    script.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    script.dataset.supabaseClient='true';
+    script.onload=resolve;
+    script.onerror=reject;
+    document.head.appendChild(script);
+  });
+}
+
+function scheduleCloudSave(){
+  if(!supabaseClient||!hasSupabaseConfig())return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(pushCloudState,600);
+}
+
+function cloudRow(){
+  return {
+    owner_key:SUPABASE_CONFIG.ownerKey,
+    plan_id:SUPABASE_CONFIG.planId,
+    state:planState,
+    updated_at:new Date().toISOString()
+  };
+}
+
+async function pushCloudState(){
+  if(!supabaseClient)return;
+  setCloudStatus('salvataggio');
+  const {error}=await supabaseClient
+    .from(SUPABASE_CONFIG.table)
+    .upsert(cloudRow(),{onConflict:'owner_key,plan_id'});
+  setCloudStatus(error?'errore':'sync');
+}
+
+async function pullCloudState(){
+  const {data,error}=await supabaseClient
+    .from(SUPABASE_CONFIG.table)
+    .select('state')
+    .eq('owner_key',SUPABASE_CONFIG.ownerKey)
+    .eq('plan_id',SUPABASE_CONFIG.planId)
+    .maybeSingle();
+  if(error)throw error;
+  if(data&&data.state&&typeof data.state==='object'){
+    applyingRemoteState=true;
+    planState=normalizeStatePayload(data.state);
+    savePlanState({sync:false});
+    applyingRemoteState=false;
+  }else{
+    await pushCloudState();
+  }
+}
+
+function subscribeCloudState(){
+  if(!supabaseClient||supabaseChannel)return;
+  supabaseChannel=supabaseClient
+    .channel(`plan-state-${SUPABASE_CONFIG.planId}`)
+    .on('postgres_changes',{
+      event:'*',
+      schema:'public',
+      table:SUPABASE_CONFIG.table,
+      filter:`plan_id=eq.${SUPABASE_CONFIG.planId}`
+    },payload=>{
+      const row=payload.new;
+      if(!row||row.owner_key!==SUPABASE_CONFIG.ownerKey||!row.state)return;
+      const remoteState=normalizeStatePayload(row.state);
+      if(JSON.stringify(remoteState)===JSON.stringify(planState))return;
+      applyingRemoteState=true;
+      planState=remoteState;
+      savePlanState({sync:false});
+      applyingRemoteState=false;
+      setCloudStatus('sync');
+      weekInteraction=false;
+      renderContent();
+    })
+    .subscribe(status=>{
+      if(status==='SUBSCRIBED')setCloudStatus('sync');
+      if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setCloudStatus('errore');
+    });
+}
+
+async function initCloudSync(){
+  if(!hasSupabaseConfig()){
+    setCloudStatus('locale');
+    return;
+  }
+  try{
+    setCloudStatus('connessione');
+    await loadSupabaseScript();
+    supabaseClient=window.supabase.createClient(SUPABASE_CONFIG.url,SUPABASE_CONFIG.anonKey);
+    await pullCloudState();
+    subscribeCloudState();
+    setCloudStatus('sync');
+    renderContent();
+  }catch(e){
+    setCloudStatus('errore');
+  }
 }
 
 function startOfDay(date){
@@ -582,6 +806,17 @@ function computeSchedule(){
   return {items,byId};
 }
 
+function weekRangeDates(w,schedule){
+  const scheduledDays=w.days.map((s,dayIndex)=>({
+    dayIndex,
+    item:schedule.byId[makeDayId(w,dayIndex)]
+  })).filter(entry=>entry.item);
+  if(!scheduledDays.length)return [];
+  const first=scheduledDays[0];
+  const start=addDays(first.item.scheduled,-first.dayIndex);
+  return [start,addDays(start,6)];
+}
+
 function renderNav(){
   document.getElementById('phaseNav').innerHTML=phases.map((p,i)=>
     `<button class="pb ${i===activePhase?'active':''}" onclick="setPhase(${i})">${escapeHtml(p.name)}</button>`
@@ -605,9 +840,16 @@ function renderPlanStatus(schedule){
       <p class="status-title">${title}</p>
       <p class="status-sub">${sub}</p>
     </div>
-    <div class="progress-box">
-      <div class="progress-row"><span>Completati</span><span>${completed}/${total}</span></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+    <div class="status-side">
+      <div>
+        <div class="progress-row"><span>Completati</span><span>${completed}/${total}</span></div>
+        <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+      </div>
+      <div class="status-actions">
+        <button class="state-btn" type="button" onclick="exportBackup()">Esporta JSON</button>
+        <button class="state-btn" type="button" onclick="requestImportBackup()">Importa JSON</button>
+      </div>
+      <span class="cloud-pill ${cloudClass()}" data-cloud-status>${cloudLabel()}</span>
     </div>
   </div>`;
 }
@@ -655,8 +897,7 @@ function renderContent(){
   const weeksHtml=p.weeks.map(w=>{
     const key=`${activePhase}-${w.num}`;
     const open=!!openWeeks[key]||(!weekInteraction&&key===autoOpenKey);
-    const weekItems=w.days.map((s,dayIndex)=>schedule.byId[makeDayId(w,dayIndex)]).filter(Boolean);
-    const dynamicRange=weekItems.length?formatDateRange(weekItems.map(item=>item.scheduled)):w.range;
+    const dynamicRange=formatDateRange(weekRangeDates(w,schedule))||w.range;
     const daysHtml=w.days.map((s,dayIndex)=>renderDayCard(w,s,dayIndex,schedule.byId[makeDayId(w,dayIndex)])).join('');
     return `<div class="week-card">
       <div class="wh" onclick="toggleWeek('${key}')">
@@ -701,7 +942,7 @@ function switchTab(name,el){
   el.classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-renderNav();renderContent();
+renderNav();renderContent();initCloudSync();
 </script>
 </body>
 </html>
