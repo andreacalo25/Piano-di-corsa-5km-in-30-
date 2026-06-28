@@ -54,6 +54,14 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 .sc{background:var(--bg2);border-radius:var(--radius);padding:11px 13px;}
 .sc .sl{font-size:11px;color:var(--text2);margin-bottom:3px;}
 .sc .sv{font-size:19px;font-weight:500;color:var(--text);}
+.plan-status{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg);padding:13px 15px;margin-bottom:1.2rem;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;}
+.status-kicker{font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:600;letter-spacing:.3px;margin-bottom:3px;}
+.status-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.35;}
+.status-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.progress-box{min-width:150px;}
+.progress-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px;}
+.progress-track{height:7px;border-radius:99px;background:var(--bg3);overflow:hidden;border:0.5px solid var(--border);}
+.progress-fill{height:100%;background:var(--blue400);border-radius:inherit;transition:width .2s ease;}
 .phase-note{font-size:13px;color:var(--text2);margin-bottom:1.2rem;padding:10px 14px;background:var(--bg2);border-radius:var(--radius);border-left:3px solid var(--blue400);}
 .week-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:9px;background:var(--bg);}
 .wh{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;background:var(--bg2);transition:background .12s;user-select:none;}
@@ -79,8 +87,13 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 .dc.mobility{border-left:3px solid var(--amber400);}
 .dc.rest{opacity:0.4;}
 .dc.combo{border-left:3px solid var(--purple400);}
+.dc.done{background:linear-gradient(180deg,var(--green50),var(--bg));border-color:rgba(39,80,10,0.25);}
+.dc.done .dtag{text-decoration:line-through;text-decoration-thickness:1px;}
+.dc.shifted{box-shadow:inset 0 0 0 1px rgba(186,117,23,0.18);}
+.day-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:3px;}
 .dd{font-size:10px;color:var(--text3);margin-bottom:2px;letter-spacing:.3px;text-transform:uppercase;font-weight:500;}
 .ddate{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500;}
+.original-date{font-size:10px;color:var(--text3);display:block;margin-top:-2px;margin-bottom:5px;}
 .dtag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:5px;margin-bottom:5px;font-weight:500;}
 .tag-run{background:var(--blue50);color:var(--blue800);}
 .tag-runq{background:var(--blue100);color:var(--blue900);}
@@ -88,6 +101,12 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 .tag-mob{background:var(--amber50);color:var(--amber800);}
 .tag-rest{background:var(--bg2);color:var(--text2);}
 .ddet{font-size:11.5px;color:var(--text2);line-height:1.5;}
+.day-controls{margin-top:10px;border-top:0.5px solid var(--border);padding-top:9px;display:grid;gap:7px;}
+.done-toggle{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--text);font-weight:500;cursor:pointer;user-select:none;width:max-content;}
+.done-toggle input{width:15px;height:15px;accent-color:var(--blue400);}
+.note-field{width:100%;min-height:42px;max-height:110px;resize:vertical;border:0.5px solid var(--border);border-radius:7px;background:var(--bg2);color:var(--text);font:12px/1.45 var(--font);padding:7px 8px;}
+.note-field:focus{outline:1.5px solid var(--blue400);border-color:transparent;background:var(--bg);}
+.completed-meta{font-size:10.5px;color:var(--green800);font-weight:500;}
 .legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:9px;}
 .li{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text2);}
 .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
@@ -108,6 +127,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:560px){
+  .plan-status{grid-template-columns:1fr;}
+  .progress-box{min-width:0;}
+}
 </style>
 </head>
 <body>
@@ -378,38 +401,273 @@ const phases = [
   }
 ];
 
-let activePhase=0, openWeeks={};
+let activePhase=0, openWeeks={}, weekInteraction=false;
+const STORAGE_KEY='andrea-running-plan-state-v1';
+const START_DATE=new Date(2026,5,22);
+const DAY_NAMES=['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const MONTH_NAMES=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+let planState=loadPlanState();
+
+function loadPlanState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    return raw?JSON.parse(raw):{};
+  }catch(e){
+    return {};
+  }
+}
+
+function savePlanState(){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(planState));
+  }catch(e){}
+}
+
+function isWorkout(s){
+  return s.type!=='rest';
+}
+
+function makeDayId(w,dayIndex){
+  return `w${String(w.num).padStart(2,'0')}-d${dayIndex+1}`;
+}
+
+function entryFor(id){
+  return planState[id]||{};
+}
+
+function cleanupEntry(id){
+  const entry=planState[id];
+  if(!entry)return;
+  if(!entry.done&&!entry.note)delete planState[id];
+}
+
+function setCompleted(id,done,scheduledAt){
+  const entry={...entryFor(id),done};
+  if(done){
+    entry.completedAt=entry.completedAt||toISO(startOfDay(new Date()));
+    entry.scheduledAt=scheduledAt||entry.scheduledAt||entry.completedAt;
+  }else{
+    delete entry.completedAt;
+    delete entry.scheduledAt;
+  }
+  planState[id]=entry;
+  cleanupEntry(id);
+  savePlanState();
+  renderContent();
+}
+
+function updateNote(id,value){
+  const entry={...entryFor(id),note:value};
+  planState[id]=entry;
+  cleanupEntry(id);
+  savePlanState();
+}
+
+function startOfDay(date){
+  return new Date(date.getFullYear(),date.getMonth(),date.getDate());
+}
+
+function addDays(date,amount){
+  const out=new Date(date);
+  out.setDate(out.getDate()+amount);
+  return out;
+}
+
+function toISO(date){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,'0');
+  const d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+
+function parseISODate(value){
+  if(!value)return null;
+  const parts=value.split('-').map(Number);
+  if(parts.length!==3||parts.some(Number.isNaN))return null;
+  return new Date(parts[0],parts[1]-1,parts[2]);
+}
+
+function parsePlanDate(value){
+  const parts=value.split('/').map(Number);
+  return new Date(2026,parts[1]-1,parts[0]);
+}
+
+function allowedDaysFor(s){
+  if(s.title.toUpperCase().includes('TEST'))return [0,1,3,5];
+  if(s.type==='run'||s.type==='run-q')return [1,3,5];
+  if(s.type==='combo'||s.type==='strength')return [2,4];
+  if(s.type==='mobility')return [2,4,6,0];
+  return [1,2,3,4,5,6,0];
+}
+
+function nextAllowedDate(fromDate,allowedDays){
+  const start=startOfDay(fromDate);
+  for(let i=0;i<21;i++){
+    const candidate=addDays(start,i);
+    if(allowedDays.includes(candidate.getDay()))return candidate;
+  }
+  return start;
+}
+
+function escapeHtml(value){
+  return String(value||'').replace(/[&<>"']/g,char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[char]));
+}
+
+function formatDate(date){
+  return `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}`;
+}
+
+function formatStoredDate(value){
+  const date=parseISODate(value);
+  return date?formatDate(date):'';
+}
+
+function formatDateRange(dates){
+  if(!dates.length)return '';
+  const sorted=[...dates].sort((a,b)=>a-b);
+  const first=sorted[0];
+  const last=sorted[sorted.length-1];
+  if(toISO(first)===toISO(last))return `${first.getDate()} ${MONTH_NAMES[first.getMonth()]} ${first.getFullYear()}`;
+  if(first.getMonth()===last.getMonth()&&first.getFullYear()===last.getFullYear()){
+    return `${first.getDate()}–${last.getDate()} ${MONTH_NAMES[first.getMonth()]} ${first.getFullYear()}`;
+  }
+  return `${first.getDate()} ${MONTH_NAMES[first.getMonth()]} – ${last.getDate()} ${MONTH_NAMES[last.getMonth()]} ${last.getFullYear()}`;
+}
+
+function getAllWorkouts(){
+  const items=[];
+  phases.forEach((phase,phaseIndex)=>{
+    phase.weeks.forEach(week=>{
+      week.days.forEach((day,dayIndex)=>{
+        if(!isWorkout(day))return;
+        items.push({
+          phaseIndex,week,day,dayIndex,
+          id:makeDayId(week,dayIndex),
+          originalDate:parsePlanDate(day.date)
+        });
+      });
+    });
+  });
+  return items;
+}
+
+function computeSchedule(){
+  const today=startOfDay(new Date());
+  let cursor=new Date(START_DATE);
+  const byId={};
+  const items=getAllWorkouts().map(item=>{
+    const entry=entryFor(item.id);
+    const allowed=allowedDaysFor(item.day);
+    let scheduled=nextAllowedDate(cursor,allowed);
+    if(entry.done){
+      const lockedDate=parseISODate(entry.scheduledAt);
+      if(lockedDate&&lockedDate>scheduled)scheduled=lockedDate;
+    }else if(scheduled<today){
+      scheduled=nextAllowedDate(today,allowed);
+    }
+    cursor=addDays(scheduled,1);
+    const scheduledItem={
+      ...item,
+      scheduled,
+      done:!!entry.done,
+      note:entry.note||'',
+      completedAt:entry.completedAt||'',
+      shifted:toISO(scheduled)!==toISO(item.originalDate)
+    };
+    byId[item.id]=scheduledItem;
+    return scheduledItem;
+  });
+  return {items,byId};
+}
 
 function renderNav(){
   document.getElementById('phaseNav').innerHTML=phases.map((p,i)=>
-    `<button class="pb ${i===activePhase?'active':''}" onclick="setPhase(${i})">${p.name}</button>`
+    `<button class="pb ${i===activePhase?'active':''}" onclick="setPhase(${i})">${escapeHtml(p.name)}</button>`
   ).join('');
+}
+
+function renderPlanStatus(schedule){
+  const total=schedule.items.length;
+  const completed=schedule.items.filter(item=>item.done).length;
+  const percent=total?Math.round((completed/total)*100):0;
+  const next=schedule.items.find(item=>!item.done);
+  const title=next
+    ? `${escapeHtml(next.day.title)} · ${DAY_NAMES[next.scheduled.getDay()]} ${formatDate(next.scheduled)}`
+    : 'Piano completato';
+  const sub=next
+    ? `Sett. ${next.week.num} · ${escapeHtml(next.day.det.split('\n')[0])}`
+    : 'Tutti gli allenamenti risultano completati.';
+  return `<div class="plan-status">
+    <div>
+      <p class="status-kicker">Prossimo allenamento</p>
+      <p class="status-title">${title}</p>
+      <p class="status-sub">${sub}</p>
+    </div>
+    <div class="progress-box">
+      <div class="progress-row"><span>Completati</span><span>${completed}/${total}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
+    </div>
+  </div>`;
+}
+
+function renderDayCard(w,s,dayIndex,meta){
+  const active=isWorkout(s);
+  const id=makeDayId(w,dayIndex);
+  const entry=entryFor(id);
+  const dayLabel=active?DAY_NAMES[meta.scheduled.getDay()]:s.d;
+  const dateLabel=active?formatDate(meta.scheduled):s.date;
+  const shiftedHtml=active&&meta.shifted
+    ? `<span class="original-date">orig. ${formatDate(meta.originalDate)}</span>`
+    : '';
+  const completedHtml=active&&meta.done&&meta.completedAt
+    ? `<span class="completed-meta">Fatto il ${formatStoredDate(meta.completedAt)}</span>`
+    : '';
+  const controlsHtml=active?`<div class="day-controls">
+    <label class="done-toggle">
+      <input type="checkbox" ${meta.done?'checked':''} onchange="setCompleted('${id}',this.checked,'${toISO(meta.scheduled)}')">
+      <span>Fatto</span>
+    </label>
+    <textarea class="note-field" placeholder="Note" oninput="updateNote('${id}',this.value)">${escapeHtml(entry.note||'')}</textarea>
+    ${completedHtml}
+  </div>`:'';
+  const cardClasses=['dc',s.type,active&&meta.done?'done':'',active&&meta.shifted?'shifted':''].filter(Boolean).join(' ');
+  return `<div class="${cardClasses}">
+    <div class="day-top">
+      <span class="dd">${escapeHtml(dayLabel)}</span>
+      <span class="ddate">${escapeHtml(dateLabel)}</span>
+    </div>
+    ${shiftedHtml}
+    <span class="dtag ${s.tag}">${escapeHtml(s.title)}</span>
+    <p class="ddet">${escapeHtml(s.det).replace(/\n/g,'<br>')}</p>
+    ${controlsHtml}
+  </div>`;
 }
 
 function renderContent(){
   const p=phases[activePhase];
-  const statsHtml=p.stats.map(s=>`<div class="sc"><p class="sl">${s.l}</p><p class="sv">${s.v}</p></div>`).join('');
+  const schedule=computeSchedule();
+  const phaseItems=schedule.items.filter(item=>item.phaseIndex===activePhase);
+  const nextInPhase=phaseItems.find(item=>!item.done);
+  const autoOpenKey=nextInPhase?`${activePhase}-${nextInPhase.week.num}`:'';
+  const statsHtml=p.stats.map(s=>`<div class="sc"><p class="sl">${escapeHtml(s.l)}</p><p class="sv">${escapeHtml(s.v)}</p></div>`).join('');
   const weeksHtml=p.weeks.map(w=>{
     const key=`${activePhase}-${w.num}`;
-    const open=!!openWeeks[key];
-    const daysHtml=w.days.map(s=>`<div class="dc ${s.type}">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;">
-        <span class="dd">${s.d}</span>
-        <span class="ddate">${s.date}</span>
-      </div>
-      <span class="dtag ${s.tag}">${s.title}</span>
-      <p class="ddet">${s.det.replace(/\n/g,'<br>')}</p>
-    </div>`).join('');
+    const open=!!openWeeks[key]||(!weekInteraction&&key===autoOpenKey);
+    const weekItems=w.days.map((s,dayIndex)=>schedule.byId[makeDayId(w,dayIndex)]).filter(Boolean);
+    const dynamicRange=weekItems.length?formatDateRange(weekItems.map(item=>item.scheduled)):w.range;
+    const daysHtml=w.days.map((s,dayIndex)=>renderDayCard(w,s,dayIndex,schedule.byId[makeDayId(w,dayIndex)])).join('');
     return `<div class="week-card">
       <div class="wh" onclick="toggleWeek('${key}')">
         <div class="wtg">
           <span class="wn">Sett. ${w.num}</span>
-          <span class="wdate">${w.range}</span>
-          <span class="wname">${w.name}</span>
-          <span class="wbadge ${w.badge}">${w.bl}</span>
+          <span class="wdate">${escapeHtml(dynamicRange)}</span>
+          <span class="wname">${escapeHtml(w.name)}</span>
+          <span class="wbadge ${w.badge}">${escapeHtml(w.bl)}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
-          <span class="wkm-label">${w.km}</span>
+          <span class="wkm-label">${escapeHtml(w.km)}</span>
           <span class="chev ${open?'open':''}">&#8964;</span>
         </div>
       </div>
@@ -422,19 +680,20 @@ function renderContent(){
           <span class="li"><span class="ld" style="background:#7F77DD;"></span>Combo</span>
         </div>
         <div class="day-grid">${daysHtml}</div>
-        <div class="wtip">&#128161; ${w.tip}</div>
+        <div class="wtip">&#128161; ${escapeHtml(w.tip)}</div>
       </div>
     </div>`;
   }).join('');
   document.getElementById('phaseContent').innerHTML=`
-    <p class="phase-note">${p.sub}</p>
+    ${renderPlanStatus(schedule)}
+    <p class="phase-note">${escapeHtml(p.sub)}</p>
     <div class="stats-row">${statsHtml}</div>
     ${weeksHtml}
   `;
 }
 
-function setPhase(i){activePhase=i;renderNav();renderContent();}
-function toggleWeek(k){openWeeks[k]=!openWeeks[k];renderContent();}
+function setPhase(i){activePhase=i;weekInteraction=false;renderNav();renderContent();}
+function toggleWeek(k){weekInteraction=true;openWeeks[k]=!openWeeks[k];renderContent();}
 function switchTab(name,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.mnb').forEach(b=>b.classList.remove('active'));
