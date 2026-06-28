@@ -62,10 +62,10 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 .progress-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:5px;}
 .progress-track{height:7px;border-radius:99px;background:var(--bg3);overflow:hidden;border:0.5px solid var(--border);}
 .progress-fill{height:100%;background:var(--blue400);border-radius:inherit;transition:width .2s ease;}
-.backup-strip{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg);padding:10px 12px;margin:-.5rem 0 1.2rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.backup-strip{border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg);padding:10px 12px;margin:1.2rem 0 0;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .backup-title{font-size:12px;font-weight:600;color:var(--text);}
 .backup-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
-.status-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+
 .state-btn{border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);border-radius:7px;padding:6px 9px;font:600 11.5px/1 var(--font);cursor:pointer;transition:background .15s,border-color .15s;}
 .state-btn:hover{background:var(--bg3);border-color:var(--text2);}
 .cloud-pill{justify-self:end;font-size:11px;font-weight:500;color:var(--text2);background:var(--bg2);border:0.5px solid var(--border);border-radius:99px;padding:4px 8px;}
@@ -140,7 +140,6 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 @media(max-width:560px){
   .plan-status{grid-template-columns:1fr;}
   .status-side{min-width:0;}
-  .status-actions{justify-content:flex-start;}
   .cloud-pill{justify-self:start;}
 }
 </style>
@@ -170,6 +169,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
 <!-- PIANO -->
 <div id="tab-piano" class="tab active">
   <div class="phase-nav" id="phaseNav"></div>
+  <div id="phaseContent"></div>
   <div class="backup-strip">
     <span class="backup-title">Backup locale</span>
     <div class="backup-actions">
@@ -179,7 +179,6 @@ body{font-family:var(--font);background:var(--bg3);color:var(--text);line-height
       <input id="backupFileInput" class="hidden-file" type="file" accept="application/json,.json" onchange="importBackup(event)">
     </div>
   </div>
-  <div id="phaseContent"></div>
 </div>
 
 <!-- FORZA -->
@@ -845,11 +844,6 @@ function renderPlanStatus(schedule){
         <div class="progress-row"><span>Completati</span><span>${completed}/${total}</span></div>
         <div class="progress-track"><div class="progress-fill" style="width:${percent}%"></div></div>
       </div>
-      <div class="status-actions">
-        <button class="state-btn" type="button" onclick="exportBackup()">Esporta JSON</button>
-        <button class="state-btn" type="button" onclick="requestImportBackup()">Importa JSON</button>
-      </div>
-      <span class="cloud-pill ${cloudClass()}" data-cloud-status>${cloudLabel()}</span>
     </div>
   </div>`;
 }
